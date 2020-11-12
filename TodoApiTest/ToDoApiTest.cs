@@ -104,10 +104,12 @@ namespace TodoApiTest
             var response = await client.PostAsync($"/api/todo/", new StringContent(content, Encoding.UTF8, "application/json"));
 
             // then
+            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+
+            Assert.Matches("/api/Todo/\\S+", response.Headers.Location.LocalPath);
             Todo expectedTodo = new Todo(id: 1, title: "Mock ToDo", completed: false, order: 0);
             var responseBody = await response.Content.ReadAsStringAsync();
             var actualTodo = JsonConvert.DeserializeObject<Todo>(responseBody);
-            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
             Assert.Equal(expectedTodo, actualTodo);
         }
 

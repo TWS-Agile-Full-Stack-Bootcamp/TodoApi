@@ -70,7 +70,7 @@ namespace TodoApi.Controllers
             {
                 return NotFound();
             }
-            else if (newTodo == null)
+            else if (newTodo.Title == null)
             {
                 return BadRequest();
             }

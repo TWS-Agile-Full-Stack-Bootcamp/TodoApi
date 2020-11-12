@@ -186,6 +186,27 @@ namespace TodoApiTest
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        [Fact]
+        public async Task Should_return_bad_request_when_update_todo_given_todo_with_title_null()
+        {
+            // given
+            var id = 1;
+            Todo currentTodo = new Todo(id: id, title: "Mock ToDo", completed: true, order: 0);
+            var mockIToDoRepository = new Mock<ITodoRepository>();
+            HttpClient client = SetupRepositoryMock(mockIToDoRepository);
+            mockIToDoRepository.Setup(m => m.FindById(id)).Returns(currentTodo);
+
+            Todo request = new Todo(title: null, completed: true);
+            string json = JsonConvert.SerializeObject(request);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // when
+            var response = await client.PutAsync($"/api/todo/{id}", content);
+
+            // then
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         private HttpClient SetupRepositoryMock(Mock<ITodoRepository> mockIToDoRepository)
         {
             return Factory.WithWebHostBuilder(builder =>

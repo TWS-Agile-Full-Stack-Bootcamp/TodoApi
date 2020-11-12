@@ -62,7 +62,7 @@ namespace TodoApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Todo>> UpdateTodo(long id, Todo newTodo)
+        public async Task<ActionResult> UpdateTodo(long id, Todo newTodo)
         {
             Todo todoOptional = todoRepository.FindById(id);
 

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -86,6 +87,28 @@ namespace TodoApiTest
 
             // then
             Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_created_and_todo_when_save_todo_successfully()
+        {
+            // given
+            var mockIToDoRepository = new Mock<ITodoRepository>();
+            HttpClient client = SetupRepositoryMock(mockIToDoRepository);
+            mockIToDoRepository.Setup(m => m.GetAll()).Returns(new List<Todo>());
+
+            Todo request = new Todo(title: "Mock ToDo", completed: false);
+            string content = JsonConvert.SerializeObject(request);
+
+            // when
+            var response = await client.PostAsync($"/api/todo/", new StringContent(content, Encoding.UTF8, "application/json"));
+
+            // then
+            Todo expectedTodo = new Todo(id: 1, title: "Mock ToDo", completed: false, order: 0);
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var actualTodo = JsonConvert.DeserializeObject<Todo>(responseBody);
+            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+            Assert.Equal(expectedTodo, actualTodo);
         }
 
         private HttpClient SetupRepositoryMock(Mock<ITodoRepository> mockIToDoRepository)

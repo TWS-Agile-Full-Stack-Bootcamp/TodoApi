@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using TodoApi.Controllers;
@@ -12,7 +13,7 @@ namespace TodoApiTest.Controllers
     public class TodoControllerTest
     {
         [Fact]
-        public async System.Threading.Tasks.Task Should_return_ok_and_todos_when_get_all_todosAsync()
+        public async Task Should_return_ok_and_todos_when_get_all_todosAsync()
         {
             // given
             List<Todo> expectedTodos = new List<Todo>() { new Todo(id: 1, title: "Mock ToDo", completed: false, order: 0), };
@@ -30,7 +31,7 @@ namespace TodoApiTest.Controllers
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task Should_return_ok_and_todo_when_get_todo_successfully()
+        public async Task Should_return_ok_and_todo_when_get_todo_successfully()
         {
             // given
             var id = 1;
@@ -49,7 +50,7 @@ namespace TodoApiTest.Controllers
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task Should_return_not_found_when_get_todo_given_specific_id_not_exist()
+        public async Task Should_return_not_found_when_get_todo_given_specific_id_not_exist()
         {
             // given
             var id = 1;
@@ -66,7 +67,7 @@ namespace TodoApiTest.Controllers
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task Should_return_created_and_todo_when_save_todo_successfully()
+        public async Task Should_return_created_and_todo_when_save_todo_successfully()
         {
             // given
             Todo requestTodo = new Todo(title: "Mock ToDo", completed: false);
@@ -84,7 +85,7 @@ namespace TodoApiTest.Controllers
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task Should_return_ok_when_delete_todo_successfully()
+        public async Task Should_return_ok_when_delete_todo_successfully()
         {
             // given
             var id = 1;
@@ -102,7 +103,7 @@ namespace TodoApiTest.Controllers
         }
 
         [Fact]
-        public async System.Threading.Tasks.Task Should_return_ok_and_todo_when_update_todo_successfully()
+        public async Task Should_return_ok_and_todo_when_update_todo_successfully()
         {
             // given
             var id = 1;
@@ -121,6 +122,25 @@ namespace TodoApiTest.Controllers
             Todo expectedTodo = new Todo(id: id, title: "Mock ToDo2", completed: true, order: 0);
             Assert.IsType<OkObjectResult>(actionResult);
             Assert.Equal(expectedTodo, (actionResult as OkObjectResult).Value);
+        }
+
+        [Fact]
+        public async Task Should_return_not_found_when_update_todo_given_specific_id_not_exist()
+        {
+            // given
+            var id = 1;
+            var mockService = new Mock<ITodoRepository>();
+            mockService.Setup(service => service.FindById(1))
+                .Returns<Todo>(null);
+            var todoController = new TodoController(mockService.Object);
+
+            Todo newTodo = new Todo(title: "Mock ToDo2", completed: true);
+
+            // when
+            ActionResult actionResult = await todoController.UpdateTodo(id, newTodo).ConfigureAwait(false);
+
+            // then
+            Assert.IsType<NotFoundResult>(actionResult);
         }
     }
 }

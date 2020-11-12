@@ -60,14 +60,7 @@ namespace TodoApiTest
             var mockIToDoRepository = new Mock<ITodoRepository>();
             Todo expectedTodo = new Todo(id: id, title: "Mock ToDo", completed: false, order: 0);
             mockIToDoRepository.Setup(m => m.FindById(1)).Returns(expectedTodo);
-
-            var client = Factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureServices(services =>
-                {
-                    services.AddScoped((serviceProvider) => { return mockIToDoRepository.Object; });
-                });
-            }).CreateClient();
+            HttpClient client = SetupRepositoryMock(mockIToDoRepository);
 
             // when
             var response = await client.GetAsync($"/api/todo/{id}");
@@ -78,6 +71,17 @@ namespace TodoApiTest
 
             Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(expectedTodo, actualTodo);
+        }
+
+        private HttpClient SetupRepositoryMock(Mock<ITodoRepository> mockIToDoRepository)
+        {
+            return Factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureServices(services =>
+                {
+                    services.AddScoped((serviceProvider) => { return mockIToDoRepository.Object; });
+                });
+            }).CreateClient();
         }
     }
 }

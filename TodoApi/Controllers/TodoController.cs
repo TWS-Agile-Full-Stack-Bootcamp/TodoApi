@@ -19,9 +19,9 @@ namespace TodoApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Todo>>> GetAll()
+        public async Task<ActionResult> GetAll()
         {
-            return todoRepository.GetAll();
+            return Ok(todoRepository.GetAll());
         }
 
         [HttpGet("{id}")]

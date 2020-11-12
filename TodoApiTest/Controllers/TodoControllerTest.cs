@@ -64,5 +64,24 @@ namespace TodoApiTest.Controllers
             // then
             Assert.IsType<NotFoundResult>(actionResult);
         }
+
+        [Fact]
+        public async System.Threading.Tasks.Task Should_return_created_and_todo_when_save_todo_successfully()
+        {
+            // given
+            var id = 1;
+            Todo requestTodo = new Todo(title: "Mock ToDo", completed: false);
+            var mockService = new Mock<ITodoRepository>();
+            mockService.Setup(service => service.GetAll())
+                .Returns(new List<Todo>());
+            var todoController = new TodoController(mockService.Object);
+
+            // when
+            ActionResult actionResult = await todoController.SaveTodo(requestTodo).ConfigureAwait(false);
+
+            // then
+            Assert.IsType<CreatedAtActionResult>(actionResult);
+            // TODO test header location
+        }
     }
 }

@@ -38,7 +38,7 @@ namespace TodoApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Todo>> SaveTodo(Todo todo)
+        public async Task<ActionResult> SaveTodo(Todo todo)
         {
             todo.Id = todoRepository.GetAll().Count + 1;
 

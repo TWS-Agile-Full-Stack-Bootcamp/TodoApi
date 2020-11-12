@@ -34,13 +34,7 @@ namespace TodoApiTest
             };
             mockIToDoRepository.Setup(m => m.GetAll()).Returns(todos);
 
-            var client = Factory.WithWebHostBuilder(builder =>
-                {
-                    builder.ConfigureServices(services =>
-                    {
-                        services.AddScoped((serviceProvider) => { return mockIToDoRepository.Object; });
-                    });
-                }).CreateClient();
+            HttpClient client = SetupRepositoryMock(mockIToDoRepository);
 
             // when
             var returnToDos = await client.GetAsync("/api/todo");

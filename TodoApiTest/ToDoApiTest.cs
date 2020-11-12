@@ -111,6 +111,65 @@ namespace TodoApiTest
             Assert.Equal(expectedTodo, actualTodo);
         }
 
+        [Fact]
+        public async Task Should_return_ok_when_delete_todo_successfully()
+        {
+            // given
+            var id = 1;
+            var mockIToDoRepository = new Mock<ITodoRepository>();
+            HttpClient client = SetupRepositoryMock(mockIToDoRepository);
+            Todo todo = new Todo(id: 1, title: "Mock ToDo", completed: false, order: 0);
+            mockIToDoRepository.Setup(m => m.FindById(id)).Returns(todo);
+
+            // when
+            var response = await client.DeleteAsync($"/api/todo/{id}");
+
+            // then
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_not_found_when_delete_todo_given_specific_id_not_exist()
+        {
+            // given
+            var id = 1;
+            var mockIToDoRepository = new Mock<ITodoRepository>();
+            HttpClient client = SetupRepositoryMock(mockIToDoRepository);
+            mockIToDoRepository.Setup(m => m.FindById(id)).Returns<Todo>(null);
+
+            // when
+            var response = await client.DeleteAsync($"/api/todo/{id}");
+
+            // then
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task Should_return_ok_and_todo_when_update_todo_successfully()
+        {
+            // given
+            var id = 1;
+            Todo currentTodo = new Todo(id: id, title: "Mock ToDo", completed: true, order: 0);
+            var mockIToDoRepository = new Mock<ITodoRepository>();
+            HttpClient client = SetupRepositoryMock(mockIToDoRepository);
+            mockIToDoRepository.Setup(m => m.FindById(id)).Returns(currentTodo);
+
+            Todo request = new Todo(title: "Mock ToDo2", completed: true);
+            string json = JsonConvert.SerializeObject(request);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // when
+            var response = await client.PutAsync($"/api/todo/{id}", content);
+
+            // then
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+
+            Todo expectedTodo = new Todo(id: 1, title: "Mock ToDo2", completed: true, order: 0);
+            var responseBody = await response.Content.ReadAsStringAsync();
+            var actualTodo = JsonConvert.DeserializeObject<Todo>(responseBody);
+            Assert.Equal(expectedTodo, actualTodo);
+        }
+
         private HttpClient SetupRepositoryMock(Mock<ITodoRepository> mockIToDoRepository)
         {
             return Factory.WithWebHostBuilder(builder =>

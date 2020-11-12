@@ -170,6 +170,26 @@ namespace TodoApiTest
             Assert.Equal(expectedTodo, actualTodo);
         }
 
+        [Fact]
+        public async Task Should_return_not_found_when_update_todo_given_specific_id_not_exist()
+        {
+            // given
+            var id = 1;
+            var mockIToDoRepository = new Mock<ITodoRepository>();
+            HttpClient client = SetupRepositoryMock(mockIToDoRepository);
+            mockIToDoRepository.Setup(m => m.FindById(id)).Returns<Todo>(null);
+
+            Todo request = new Todo(title: "Mock ToDo2", completed: true);
+            string json = JsonConvert.SerializeObject(request);
+            StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            // when
+            var response = await client.PutAsync($"/api/todo/{id}", content);
+
+            // then
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        }
+
         private HttpClient SetupRepositoryMock(Mock<ITodoRepository> mockIToDoRepository)
         {
             return Factory.WithWebHostBuilder(builder =>

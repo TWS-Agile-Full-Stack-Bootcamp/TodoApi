@@ -34,7 +34,7 @@ namespace TodoApiTest.Controllers
         {
             // given
             var id = 1;
-            Todo expectedTodo = new Todo(id: 1, title: "Mock ToDo", completed: false, order: 0);
+            Todo expectedTodo = new Todo(id: id, title: "Mock ToDo", completed: false, order: 0);
             var mockService = new Mock<ITodoRepository>();
             mockService.Setup(service => service.FindById(id))
                 .Returns(expectedTodo);
@@ -69,7 +69,6 @@ namespace TodoApiTest.Controllers
         public async System.Threading.Tasks.Task Should_return_created_and_todo_when_save_todo_successfully()
         {
             // given
-            var id = 1;
             Todo requestTodo = new Todo(title: "Mock ToDo", completed: false);
             var mockService = new Mock<ITodoRepository>();
             mockService.Setup(service => service.GetAll())
@@ -82,6 +81,24 @@ namespace TodoApiTest.Controllers
             // then
             Assert.IsType<CreatedAtActionResult>(actionResult);
             // TODO test header location
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task Should_return_ok_when_delete_todo_successfully()
+        {
+            // given
+            var id = 1;
+            Todo todo = new Todo(id: id, title: "Mock ToDo", completed: false, order: 0);
+            var mockService = new Mock<ITodoRepository>();
+            mockService.Setup(service => service.FindById(1))
+                .Returns(todo);
+            var todoController = new TodoController(mockService.Object);
+
+            // when
+            ActionResult actionResult = await todoController.DeleteTodo(id).ConfigureAwait(false);
+
+            // then
+            Assert.IsType<OkResult>(actionResult);
         }
     }
 }

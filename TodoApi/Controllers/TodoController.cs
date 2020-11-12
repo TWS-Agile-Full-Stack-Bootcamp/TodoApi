@@ -48,7 +48,7 @@ namespace TodoApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Todo>> DeleteTodo(long id)
+        public async Task<ActionResult> DeleteTodo(long id)
         {
             Todo todoOptional = todoRepository.FindById(id);
 

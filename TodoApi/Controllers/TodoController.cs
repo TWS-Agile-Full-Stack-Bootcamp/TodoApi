@@ -25,7 +25,7 @@ namespace TodoApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Todo>> GetTodo(long id)
+        public async Task<ActionResult> GetTodo(long id)
         {
             Todo todoOptional = todoRepository.FindById(id);
 

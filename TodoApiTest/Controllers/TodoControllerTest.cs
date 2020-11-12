@@ -28,5 +28,24 @@ namespace TodoApiTest.Controllers
             Assert.IsType<OkObjectResult>(actionResult);
             Assert.Equal(expectedTodos, (actionResult as OkObjectResult).Value);
         }
+
+        [Fact]
+        public async System.Threading.Tasks.Task Should_return_ok_and_todo_when_get_todo_successfully()
+        {
+            // given
+            var id = 1;
+            Todo expectedTodo = new Todo(id: 1, title: "Mock ToDo", completed: false, order: 0);
+            var mockService = new Mock<ITodoRepository>();
+            mockService.Setup(service => service.FindById(id))
+                .Returns(expectedTodo);
+            var todoController = new TodoController(mockService.Object);
+
+            // when
+            ActionResult actionResult = await todoController.GetTodo(id).ConfigureAwait(false);
+
+            // then
+            Assert.IsType<OkObjectResult>(actionResult);
+            Assert.Equal(expectedTodo, (actionResult as OkObjectResult).Value);
+        }
     }
 }

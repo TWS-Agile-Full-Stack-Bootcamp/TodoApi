@@ -47,5 +47,22 @@ namespace TodoApiTest.Controllers
             Assert.IsType<OkObjectResult>(actionResult);
             Assert.Equal(expectedTodo, (actionResult as OkObjectResult).Value);
         }
+
+        [Fact]
+        public async System.Threading.Tasks.Task Should_return_not_found_when_get_todo_given_specific_id_not_exist()
+        {
+            // given
+            var id = 1;
+            var mockService = new Mock<ITodoRepository>();
+            mockService.Setup(service => service.FindById(id))
+                .Returns<Todo>(null);
+            var todoController = new TodoController(mockService.Object);
+
+            // when
+            ActionResult actionResult = await todoController.GetTodo(id).ConfigureAwait(false);
+
+            // then
+            Assert.IsType<NotFoundResult>(actionResult);
+        }
     }
 }

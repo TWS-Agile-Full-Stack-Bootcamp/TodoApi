@@ -19,13 +19,13 @@ namespace TodoApi.Controllers
         }
 
         [HttpGet]
-        public ActionResult<IEnumerable<Todo>> GetAll()
+        public async Task<ActionResult<IEnumerable<Todo>>> GetAll()
         {
             return todoRepository.GetAll();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<Todo> GetTodo(long id)
+        public async Task<ActionResult<Todo>> GetTodo(long id)
         {
             Todo todoOptional = todoRepository.FindById(id);
 
@@ -34,11 +34,11 @@ namespace TodoApi.Controllers
                 return NotFound();
             }
 
-            return todoOptional;
+            return Ok(todoOptional);
         }
 
         [HttpPost]
-        public ActionResult<Todo> SaveTodo(Todo todo)
+        public async Task<ActionResult<Todo>> SaveTodo(Todo todo)
         {
             todo.Id = todoRepository.GetAll().Count + 1;
 
@@ -48,7 +48,7 @@ namespace TodoApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public ActionResult<Todo> DeleteTodo(long id)
+        public async Task<ActionResult<Todo>> DeleteTodo(long id)
         {
             Todo todoOptional = todoRepository.FindById(id);
 
@@ -62,7 +62,7 @@ namespace TodoApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Todo> UpdateTodo(long id, Todo newTodo)
+        public async Task<ActionResult<Todo>> UpdateTodo(long id, Todo newTodo)
         {
             Todo todoOptional = todoRepository.FindById(id);
 

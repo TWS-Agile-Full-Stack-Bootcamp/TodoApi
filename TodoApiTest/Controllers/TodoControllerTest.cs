@@ -142,5 +142,25 @@ namespace TodoApiTest.Controllers
             // then
             Assert.IsType<NotFoundResult>(actionResult);
         }
+
+        [Fact]
+        public async Task Should_return_bad_request_when_update_todo_given_todo_with_title_null()
+        {
+            // given
+            var id = 1;
+            Todo currentTodo = new Todo(id: id, title: "Mock ToDo", completed: false, order: 0);
+            var mockService = new Mock<ITodoRepository>();
+            mockService.Setup(service => service.FindById(1))
+                .Returns(currentTodo);
+            var todoController = new TodoController(mockService.Object);
+
+            Todo newTodo = new Todo(title: null, completed: true);
+
+            // when
+            ActionResult actionResult = await todoController.UpdateTodo(id, newTodo).ConfigureAwait(false);
+
+            // then
+            Assert.IsType<BadRequestResult>(actionResult);
+        }
     }
 }
